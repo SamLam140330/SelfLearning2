@@ -4,9 +4,9 @@ public class PlayerData
     public int score;
     public string playerName;
 
-    public PlayerData(GameController gameController)
+    public PlayerData(PlayerController playerController)
     {
-        score = gameController.Score;
-        playerName = gameController.PlayerName;
+        score = playerController.Score;
+        playerName = playerController.PlayerName;
     }
 }

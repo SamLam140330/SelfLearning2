@@ -4,18 +4,16 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     #region Global Variable Declaration
-    private int _score;
-    private string _playerName;
+    private PlayerController playerController;
     [SerializeField] private Text scoreTxt = null;
     [SerializeField] private Text playerTxt = null;
-    public int Score { get { return _score; } set { _score = value; } }
-    public string PlayerName { get { return _playerName; } set { _playerName = value; } }
     #endregion
 
     #region Unity Build-in Function
     private void Start()
     {
         TestOnly();
+        FindObject();
     }
 
     private void Update()
@@ -34,6 +32,11 @@ public class GameController : MonoBehaviour
 #endif
     }
 
+    private void FindObject()
+    {
+        playerController = FindObjectOfType<PlayerController>();
+    }
+
     private void QuitGame()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -44,29 +47,29 @@ public class GameController : MonoBehaviour
 
     private void Display()
     {
-        scoreTxt.text = "You got " + Score;
-        playerTxt.text = "Your name is " + PlayerName;
+        scoreTxt.text = "You got " + playerController.Score;
+        playerTxt.text = "Your name is " + playerController.PlayerName;
     }
     #endregion
 
     #region Button Function
     public void AddScore()
     {
-        Score += 10;
-        PlayerName = "Test1";
+        playerController.Score += 10;
+        playerController.PlayerName = "Test1";
         Display();
     }
 
     public void SubtractScore()
     {
-        Score -= 10;
-        PlayerName = "Test2";
+        playerController.Score -= 10;
+        playerController.PlayerName = "Test2";
         Display();
     }
 
     public void Save()
     {
-        SaveLoadSystem.SavePlayer(this);
+        SaveLoadSystem.SavePlayer(playerController);
     }
 
     public void Load()
@@ -74,8 +77,8 @@ public class GameController : MonoBehaviour
         PlayerData playerData = SaveLoadSystem.LoadPlayer();
         if (playerData != null)
         {
-            Score = playerData.score;
-            PlayerName = playerData.playerName;
+            playerController.Score = playerData.score;
+            playerController.PlayerName = playerData.playerName;
             Display();
             Debug.Log("Loaded");
         }

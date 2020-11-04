@@ -81,7 +81,7 @@ public static class Encryption
                 if (!hash.SequenceEqual(chash))
                 {
                     //throw new System.Exception("Invalid content hash");
-                    Debug.LogWarning("Fail to pass the Content Authentication! Some data has been tamper");
+                    Debug.LogWarning("FAIL to pass the Content Authentication! Some data has been tamper!");
                 }
                 return raws;
             }

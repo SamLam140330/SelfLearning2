@@ -8,11 +8,11 @@ public class SaveLoadSystem
 {
     private static readonly string dataPath = Application.persistentDataPath + "/save.dat";
 
-    public static void SavePlayer(GameController gameController)
+    public static void SavePlayer(PlayerController playerController)
     {
         byte[] serializedData;
         BinaryFormatter formatter = new BinaryFormatter();
-        PlayerData playerData = new PlayerData(gameController);
+        PlayerData playerData = new PlayerData(playerController);
         using (MemoryStream stream = new MemoryStream())
         {
             formatter.Serialize(stream, playerData);
