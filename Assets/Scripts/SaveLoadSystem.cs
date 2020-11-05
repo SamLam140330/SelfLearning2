@@ -6,18 +6,28 @@ using UnityEngine;
 
 public class SaveLoadSystem
 {
-    private static readonly string dataPath = Application.persistentDataPath + "/save.dat";
+    private static readonly string dataPath = Path.Combine(Application.persistentDataPath, "save.dat");
 
-    public static void SavePlayer(PlayerController playerController)
+    public static void SavePlayer()
     {
-        byte[] serializedData;
+        byte[] serializedData = null;
         BinaryFormatter formatter = new BinaryFormatter();
-        PlayerData playerData = new PlayerData(playerController);
+        PlayerData playerData = new PlayerData();
         using (MemoryStream stream = new MemoryStream())
         {
-            formatter.Serialize(stream, playerData);
-            serializedData = stream.ToArray();
-            stream.Close();
+            try
+            {
+                formatter.Serialize(stream, playerData);
+                serializedData = stream.ToArray();
+            }
+            catch (System.Exception)
+            {
+                Debug.LogWarning("ERROR saving data in " + dataPath);
+            }
+            finally
+            {
+                stream.Close();
+            }
         }
         //var raws = Encoding.UTF8.GetBytes(BitConverter.ToString(serializedData));
         byte[] encryptData = Encryption.Encrypt(serializedData, "HjLyxK_W7jrqu35g");
