@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using UnityEngine;
 
 public class SaveLoadSystem
@@ -29,7 +27,6 @@ public class SaveLoadSystem
                 stream.Close();
             }
         }
-        //var raws = Encoding.UTF8.GetBytes(BitConverter.ToString(serializedData));
         byte[] encryptData = Encryption.Encrypt(serializedData, "HjLyxK_W7jrqu35g");
         try
         {
@@ -55,24 +52,21 @@ public class SaveLoadSystem
             return null;
         }
         byte[] decryptData = Encryption.Decrypt(serializedData, "HjLyxK_W7jrqu35g");
-        //var raws = Encoding.UTF8.GetBytes(BitConverter.ToString(decryptData));
         BinaryFormatter formatter = new BinaryFormatter();
-        using (MemoryStream stream = new MemoryStream(decryptData))
+        MemoryStream stream = new MemoryStream(decryptData);
+        PlayerData playerData;
+        try
         {
-            PlayerData playerData;
-            try
-            {
-                playerData = formatter.Deserialize(stream) as PlayerData;
-                return playerData;
-            }
-            catch (System.Exception)
-            {
-                return null;
-            }
-            finally
-            {
-                stream.Close();
-            }
+            playerData = formatter.Deserialize(stream) as PlayerData;
+            return playerData;
+        }
+        catch (System.Exception)
+        {
+            return null;
+        }
+        finally
+        {
+            stream.Close();
         }
     }
 }

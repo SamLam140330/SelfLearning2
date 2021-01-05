@@ -1,14 +1,14 @@
 ﻿[System.Serializable]
 public class PlayerData
 {
-    public int score;
-    public string playerName;
     public float playerHealth;
+    public string playerName;
+    public int playerScore;
 
     public PlayerData()
     {
-        score = PlayerController.Score;
-        playerName = PlayerController.PlayerName;
-        playerHealth = PlayerInfo.PlayerHealth;
+        playerHealth = DataManager.PlayerHealth;
+        playerName = DataManager.PlayerName;
+        playerScore = DataManager.PlayerScore;
     }
 }

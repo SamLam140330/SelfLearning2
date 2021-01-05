@@ -2,16 +2,12 @@
 using System.Text;
 using System.Security.Cryptography;
 using System.Linq;
-using UnityEngine;
 
 public static class Encryption
 {
-    #region Variable Declaration
-    private static Aes aes = Aes.Create();
-    private static SHA256 sha = SHA256.Create();
-    #endregion
+    private static readonly Aes aes = Aes.Create();
+    private static readonly SHA256 sha = SHA256.Create();
 
-    #region Key Generate
     private static System.Tuple<byte[], byte[]> GenerateKeyIV(string secret)
     {
         using (var md5 = new MD5CryptoServiceProvider())
@@ -19,15 +15,13 @@ public static class Encryption
             var salt = md5.ComputeHash(Encoding.UTF8.GetBytes(secret));
             using (var gen = new Rfc2898DeriveBytes(secret, salt))
             {
-                var key = gen.GetBytes(aes.KeySize / 8);
-                var iv = gen.GetBytes(aes.BlockSize / 8);
+                var key = gen.GetBytes((int)(aes.KeySize * 0.125));
+                var iv = gen.GetBytes((int)(aes.BlockSize * 0.125));
                 return new System.Tuple<byte[], byte[]>(key, iv);
             }
         }
     }
-    #endregion
 
-    #region Encrypt Data
     public static byte[] Encrypt(byte[] src, string secret)
     {
         var v = GenerateKeyIV(secret);
@@ -36,7 +30,7 @@ public static class Encryption
         return Encrypt(src, key, iv);
     }
 
-    public static byte[] Encrypt(byte[] src, byte[] key, byte[] iv)
+    private static byte[] Encrypt(byte[] src, byte[] key, byte[] iv)
     {
         using (var output = new MemoryStream())
         {
@@ -50,9 +44,7 @@ public static class Encryption
             return output.ToArray();
         }
     }
-    #endregion
 
-    #region Decrypt Data
     public static byte[] Decrypt(byte[] src, string secret)
     {
         var v = GenerateKeyIV(secret);
@@ -61,7 +53,7 @@ public static class Encryption
         return Decrypt(src, key, iv);
     }
 
-    public static byte[] Decrypt(byte[] src, byte[] key, byte[] iv)
+    private static byte[] Decrypt(byte[] src, byte[] key, byte[] iv)
     {
         using (var output = new MemoryStream())
         {
@@ -72,7 +64,7 @@ public static class Encryption
                 {
                     cs.CopyTo(output);
                 }
-                var hash = new byte[sha.HashSize / 8];
+                var hash = new byte[(int)(sha.HashSize * 0.125)];
                 var raws = new byte[output.Length - hash.Length];
                 output.Seek(0, SeekOrigin.Begin);
                 output.Read(raws, 0, raws.Length);
@@ -80,12 +72,10 @@ public static class Encryption
                 var chash = sha.ComputeHash(raws);
                 if (!hash.SequenceEqual(chash))
                 {
-                    //throw new System.Exception("Invalid content hash");
-                    Debug.LogWarning("FAIL to pass the Content Authentication! Some data has been tamper!");
+                    throw new System.Exception("Invalid content hash");
                 }
                 return raws;
             }
         }
     }
-    #endregion
 }
